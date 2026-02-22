@@ -155,87 +155,106 @@
     </nav>
 
     <main class="main-content">
-        <div class="page-header">
+        <div class="page-header d-flex justify-content-between align-items-center">
             <div>
-                <h1>Dashboard</h1>
-                <p class="text-muted mb-0">Welcome back, Admin User!</p>
+                <h1>User Management</h1>
+                <p class="text-muted mb-0">Manage system administrators, librarians, and students.</p>
             </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon" style="background:#0f3460">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">1,245</div>
-                            <div class="stat-label">Total Books</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon" style="background:#28a745">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">856</div>
-                            <div class="stat-label">Active Students</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon" style="background:#ffc107">
-                            <i class="fas fa-hand-holding"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">124</div>
-                            <div class="stat-label">Books Issued</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <div class="stat-icon" style="background:#dc3545">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">12</div>
-                            <div class="stat-label">Overdue Books</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal" onclick="openAddModal()">
+                <i class="fas fa-plus-circle me-2"></i>Add New User
+            </button>
         </div>
 
         <div class="card mb-4">
             <div class="card-header">
-                <i class="fas fa-book me-2"></i>Library Books (Live API Data)
+                <i class="fas fa-users me-2"></i>Registered Users
             </div>
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0" id="usersTable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Availability</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="dashboard-activity-table-body">
-                            <tr><td colspan="4" class="text-center text-muted">Loading books from Laravel API...</td></tr>
+                        <tbody id="users-table-body">
+                            <tr><td colspan="8" class="text-center text-muted">Loading users...</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit User Modal -->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">Add New User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="userForm">
+                        <div class="modal-body">
+                            <input type="hidden" id="userId">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Role</label>
+                                <select class="form-select" id="role" required>
+                                    <option value="Student">Student</option>
+                                    <option value="Librarian">Librarian</option>
+                                    <option value="Faculty">Faculty</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="userType" class="form-label">User Type</label>
+                                <select class="form-select" id="userType" onchange="toggleFacultySubtype()">
+                                    <option value="student">Student</option>
+                                    <option value="student_assistant">Student Assistant</option>
+                                    <option value="librarian">Librarian</option>
+                                    <option value="faculty">Faculty</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="facultySubtypeContainer" style="display: none;">
+                                <label for="facultySubtype" class="form-label">Faculty Subtype</label>
+                                <select class="form-select" id="facultySubtype">
+                                    <option value="">-- Select Subtype --</option>
+                                    <option value="teacher">Teacher</option>
+                                    <option value="non_teacher">Non-Teacher</option>
+                                    <option value="staff">Staff</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" required>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="locked">Locked</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="saveUserBtn">Save User</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -275,7 +294,7 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/main.js"></script>
+    <script src="js/users.js"></script>
 </body>
 </html>
