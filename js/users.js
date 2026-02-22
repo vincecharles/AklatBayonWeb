@@ -2,10 +2,10 @@
 
 // Initial Mock Data Array representing the AklatBayon database
 let mockUsers = [
-    { id: 'usr-001', username: 'admin01', full_name: 'Admin User', email: 'admin@example.com', role: 'Admin', user_type: 'student', faculty_subtype: '', status: 'active' },
-    { id: 'usr-002', username: 'lib01', full_name: 'Jane Smith', email: 'jane@example.com', role: 'Librarian', user_type: 'librarian', faculty_subtype: '', status: 'active' },
-    { id: 'usr-003', username: 'stud01', full_name: 'John Doe', email: 'john@example.com', role: 'Student', user_type: 'student', faculty_subtype: '', status: 'active' },
-    { id: 'usr-004', username: 'prof01', full_name: 'Mark Taylor', email: 'mark@example.com', role: 'Faculty', user_type: 'faculty', faculty_subtype: 'teacher', status: 'inactive' }
+    { id: 'usr-001', username: 'admin01', full_name: 'Admin User', email: 'admin@example.com', role: 'Admin', faculty_subtype: '', status: 'active' },
+    { id: 'usr-002', username: 'lib01', full_name: 'Jane Smith', email: 'jane@example.com', role: 'Librarian', faculty_subtype: '', status: 'active' },
+    { id: 'usr-003', username: 'stud01', full_name: 'John Doe', email: 'john@example.com', role: 'Student', faculty_subtype: '', status: 'active' },
+    { id: 'usr-004', username: 'prof01', full_name: 'Mark Taylor', email: 'mark@example.com', role: 'Faculty', faculty_subtype: 'teacher', status: 'inactive' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
  * Toggle the visibility of Faculty Subtype dropdown based on User Type
  */
 window.toggleFacultySubtype = function() {
-    const userType = document.getElementById('userType').value;
+    const role = document.getElementById('role').value;
     const subtypeContainer = document.getElementById('facultySubtypeContainer');
-    if (userType === 'faculty') {
+    if (role === 'Faculty') {
         subtypeContainer.style.display = 'block';
         document.getElementById('facultySubtype').required = true;
     } else {
@@ -73,10 +73,10 @@ function renderUsersTable(users) {
         if (user.role === 'Student') roleBadgeClass = 'bg-success';
         if (user.role === 'Faculty') roleBadgeClass = 'bg-warning text-dark';
 
-        // Format user_type and subtype nicely
-        let typeDisplay = user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1).replace('_', ' ');
-        if (user.user_type === 'faculty' && user.faculty_subtype) {
-            typeDisplay += ` <small class="text-muted">(${user.faculty_subtype.replace('_', ' ')})</small>`;
+        // Format role and subtype nicely
+        let roleDisplay = `<span class="badge ${roleBadgeClass}">${user.role}</span>`;
+        if (user.role === 'Faculty' && user.faculty_subtype) {
+            roleDisplay += `<br><small class="text-muted mt-1 d-inline-block">${user.faculty_subtype.replace('_', ' ').toUpperCase()}</small>`;
         }
 
         row.innerHTML = `
@@ -90,8 +90,7 @@ function renderUsersTable(users) {
                 </div>
             </td>
             <td>${user.email}</td>
-            <td><span class="badge ${roleBadgeClass}">${user.role}</span></td>
-            <td>${typeDisplay}</td>
+            <td>${roleDisplay}</td>
             <td>
                 <span class="badge ${user.status === 'active' ? 'bg-success' : (user.status === 'locked' ? 'bg-danger' : 'bg-secondary')}">
                     ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
@@ -126,7 +125,6 @@ function handleUserSubmit(e) {
         full_name: document.getElementById('fullName').value,
         email: document.getElementById('email').value,
         role: document.getElementById('role').value,
-        user_type: document.getElementById('userType').value,
         faculty_subtype: document.getElementById('facultySubtype').value,
         status: document.getElementById('status').value
     };
@@ -175,7 +173,6 @@ window.openEditModal = function(user) {
     document.getElementById('fullName').value = user.full_name;
     document.getElementById('email').value = user.email;
     document.getElementById('role').value = user.role;
-    document.getElementById('userType').value = user.user_type;
     document.getElementById('facultySubtype').value = user.faculty_subtype || '';
     document.getElementById('status').value = user.status;
     document.getElementById('userModalLabel').innerText = 'Edit User';
